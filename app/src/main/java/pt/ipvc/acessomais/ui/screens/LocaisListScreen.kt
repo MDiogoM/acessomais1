@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import pt.ipvc.acessomais.data.model.Local
 import pt.ipvc.acessomais.viewmodel.LocalViewModel
 
@@ -21,7 +22,6 @@ fun LocaisListScreen(
     viewModel: LocalViewModel,
     onLocalSelected: (Local) -> Unit
 ) {
-    // Observa a lista de locais do ViewModel (já filtrada por utilizador)
     val listaLocais by viewModel.locais.collectAsState()
 
     if (listaLocais.isEmpty()) {
@@ -34,7 +34,7 @@ fun LocaisListScreen(
                 LocalItem(
                     local = local,
                     onClick = { onLocalSelected(local) },
-                    onDelete = { viewModel.deleteLocal(local) } // Agora a referência existe
+                    onDelete = { viewModel.deleteLocal(local) }
                 )
             }
         }
@@ -56,9 +56,20 @@ fun LocalItem(local: Local, onClick: () -> Unit, onDelete: () -> Unit) {
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = local.nome, style = MaterialTheme.typography.titleLarge)
+
+                // ADICIONADO: Email do criador por baixo do nome
+                Text(
+                    text = "Criado por: ${local.userEmail}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.secondary,
+                    fontSize = 12.sp
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
                 Text(text = local.tipo, style = MaterialTheme.typography.bodyMedium)
             }
-            // Botão para apagar o local
+
             IconButton(onClick = onDelete) {
                 Icon(
                     imageVector = Icons.Default.Delete,

@@ -8,6 +8,9 @@ interface LocalDao {
     @Query("SELECT * FROM locais WHERE userEmail = :email ORDER BY updatedAt DESC")
     fun getLocaisByUser(email: String): Flow<List<LocalEntity>>
 
+    @Query("SELECT * FROM locais ORDER BY updatedAt DESC")
+    fun getAllLocais(): Flow<List<LocalEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(local: LocalEntity)
 

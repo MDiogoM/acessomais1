@@ -9,6 +9,9 @@ class LocalRepository(private val localDao: LocalDao) {
     fun getLocais(email: String): Flow<List<Local>> =
         localDao.getLocaisByUser(email).map { list -> list.map { it.toDomain() } }
 
+    fun getAllLocais(): Flow<List<Local>> =
+        localDao.getAllLocais().map { list -> list.map { it.toDomain() } }
+
     suspend fun saveLocal(local: Local) {
         localDao.insert(local.toEntity())
     }
