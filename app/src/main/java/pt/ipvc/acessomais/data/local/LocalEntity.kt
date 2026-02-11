@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class LocalEntity(
     @PrimaryKey
     val id: String,
+    val userEmail: String, // Campo para persistência por conta
     val nome: String,
     val tipo: String,
     val latitude: Double,

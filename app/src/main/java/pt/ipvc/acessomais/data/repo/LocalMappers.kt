@@ -6,6 +6,7 @@ import pt.ipvc.acessomais.data.model.Local
 fun LocalEntity.toDomain(): Local =
     Local(
         id = id,
+        userEmail = userEmail,
         nome = nome,
         tipo = tipo,
         latitude = latitude,
@@ -23,6 +24,7 @@ fun LocalEntity.toDomain(): Local =
 fun Local.toEntity(): LocalEntity =
     LocalEntity(
         id = id,
+        userEmail = userEmail,
         nome = nome,
         tipo = tipo,
         latitude = latitude,
@@ -36,4 +38,3 @@ fun Local.toEntity(): LocalEntity =
         updatedAt = updatedAt,
         pendingSync = pendingSync
     )
-

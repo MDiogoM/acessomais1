@@ -2,50 +2,104 @@ package pt.ipvc.acessomais.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import pt.ipvc.acessomais.data.model.Local
+import pt.ipvc.acessomais.viewmodel.LocalViewModel
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddLocalScreen(onSave: (Local) -> Unit, onCancel: () -> Unit) {
+fun AddLocalScreen(
+    viewModel: LocalViewModel,
+    onNavigateBack: () -> Unit
+) {
     var nome by remember { mutableStateOf("") }
-    var lat by remember { mutableStateOf("") }
-    var lon by remember { mutableStateOf("") }
+    var latInput by remember { mutableStateOf("") }
+    var lonInput by remember { mutableStateOf("") }
     var comentario by remember { mutableStateOf("") }
-    var rating by remember { mutableIntStateOf(3) }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {
-        Text("Novo Local", style = MaterialTheme.typography.headlineMedium)
-        Spacer(Modifier.height(16.dp))
+    val userEmail by viewModel.userEmailLogado.collectAsState()
 
-        OutlinedTextField(value = nome, onValueChange = { nome = it }, label = { Text("Nome do Local") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = lat, onValueChange = { lat = it }, label = { Text("Latitude") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = lon, onValueChange = { lon = it }, label = { Text("Longitude") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = comentario, onValueChange = { comentario = it }, label = { Text("Comentário") }, modifier = Modifier.fillMaxWidth(), minLines = 3)
+    Scaffold(
+        topBar = { TopAppBar(title = { Text("Novo Local") }) }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            OutlinedTextField(
+                value = nome,
+                onValueChange = { nome = it },
+                label = { Text("Nome do Local") },
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        Text("Avaliação", modifier = Modifier.padding(top = 16.dp))
-        Slider(value = rating.toFloat(), onValueChange = { rating = it.toInt() }, valueRange = 1f..5f, steps = 3)
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    value = latInput,
+                    onValueChange = { latInput = it },
+                    label = { Text("Latitude (ex: 41.69)") },
+                    modifier = Modifier.weight(1f),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
+                OutlinedTextField(
+                    value = lonInput,
+                    onValueChange = { lonInput = it },
+                    label = { Text("Longitude (ex: -8.83)") },
+                    modifier = Modifier.weight(1f),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
+            }
 
-        Row(modifier = Modifier.fillMaxWidth().padding(top = 24.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            OutlinedButton(onClick = onCancel, modifier = Modifier.weight(1f)) { Text("Cancelar") }
+            OutlinedTextField(
+                value = comentario,
+                onValueChange = { comentario = it },
+                label = { Text("Comentários") },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 4
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Button(
                 onClick = {
-                    onSave(Local(
-                        nome = nome,
-                        tipo = "Público",
-                        latitude = lat.toDoubleOrNull() ?: 0.0,
-                        longitude = lon.toDoubleOrNull() ?: 0.0,
-                        temRampa = false, temElevador = false, larguraEntradaCm = null, temWcAdaptado = false,
-                        comentario = comentario.takeIf { it.isNotBlank() },
-                        rating = rating
-                    ))
+                    // Correção: Substituir vírgulas por pontos antes da conversão
+                    val lat = latInput.replace(',', '.').toDoubleOrNull() ?: 0.0
+                    val lon = lonInput.replace(',', '.').toDoubleOrNull() ?: 0.0
+
+                    userEmail?.let { email ->
+                        val novoLocal = Local(
+                            userEmail = email,
+                            nome = nome,
+                            latitude = lat,
+                            longitude = lon,
+                            comentario = comentario,
+                            // Valores padrão para os campos restantes do modelo
+                            tipo = "Geral",
+                            temRampa = false,
+                            temElevador = false,
+                            larguraEntradaCm = null,
+                            temWcAdaptado = false,
+                            rating = 0
+                        )
+                        viewModel.saveLocal(novoLocal)
+                        onNavigateBack()
+                    }
                 },
-                enabled = nome.isNotBlank() && lat.isNotBlank() && lon.isNotBlank(),
-                modifier = Modifier.weight(1f)
-            ) { Text("Guardar") }
+                modifier = Modifier.fillMaxWidth(),
+                enabled = nome.isNotBlank() && latInput.isNotBlank() && lonInput.isNotBlank()
+            ) {
+                Text("Criar Local")
+            }
         }
     }
 }

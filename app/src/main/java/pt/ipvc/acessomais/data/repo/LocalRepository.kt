@@ -6,8 +6,8 @@ import pt.ipvc.acessomais.data.local.LocalDao
 import pt.ipvc.acessomais.data.model.Local
 
 class LocalRepository(private val localDao: LocalDao) {
-    fun getLocais(): Flow<List<Local>> =
-        localDao.getAllLocais().map { list -> list.map { it.toDomain() } }
+    fun getLocais(email: String): Flow<List<Local>> =
+        localDao.getLocaisByUser(email).map { list -> list.map { it.toDomain() } }
 
     suspend fun saveLocal(local: Local) {
         localDao.insert(local.toEntity())

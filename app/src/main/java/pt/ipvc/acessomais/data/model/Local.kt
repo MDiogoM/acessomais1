@@ -4,6 +4,7 @@ import java.util.UUID
 
 data class Local(
     val id: String = UUID.randomUUID().toString(),
+    val userEmail: String, // Identificador do utilizador
     val nome: String,
     val tipo: String,
     val latitude: Double,

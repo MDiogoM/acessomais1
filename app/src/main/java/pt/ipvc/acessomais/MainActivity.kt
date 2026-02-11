@@ -24,10 +24,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            // Estado para controlar a navegação
             var telaAtual by remember { mutableStateOf("auth") }
 
-            // O nome correto do tema definido em Theme.kt é AcessoTheme
             AcessoTheme {
                 if (telaAtual == "auth") {
                     AuthScreen(vm) { telaAtual = "lista" }
@@ -37,16 +35,12 @@ class MainActivity : ComponentActivity() {
                             if (telaAtual != "adicionar") {
                                 CenterAlignedTopAppBar(
                                     title = { Text("Acesso+", fontWeight = FontWeight.Bold) },
-                                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                                    ),
-                                    // Botão de Logout adicionado à esquerda
                                     navigationIcon = {
-                                        IconButton(onClick = { telaAtual = "auth" }) {
-                                            Icon(
-                                                imageVector = Icons.AutoMirrored.Filled.Logout,
-                                                contentDescription = "Sair"
-                                            )
+                                        IconButton(onClick = {
+                                            vm.logout()
+                                            telaAtual = "auth"
+                                        }) {
+                                            Icon(imageVector = Icons.AutoMirrored.Filled.Logout, contentDescription = "Sair")
                                         }
                                     },
                                     actions = {
@@ -54,9 +48,7 @@ class MainActivity : ComponentActivity() {
                                             telaAtual = if (telaAtual == "mapa") "lista" else "mapa"
                                         }) {
                                             Icon(
-                                                imageVector = if (telaAtual == "mapa")
-                                                    Icons.Default.FormatListBulleted
-                                                else Icons.Default.Map,
+                                                imageVector = if (telaAtual == "mapa") Icons.Default.FormatListBulleted else Icons.Default.Map,
                                                 contentDescription = null
                                             )
                                         }
@@ -64,28 +56,27 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                         },
-                        floatingActionButtonPosition = FabPosition.Start,
                         floatingActionButton = {
-                            if (telaAtual != "adicionar") {
-                                ExtendedFloatingActionButton(
+                            if (telaAtual == "lista" || telaAtual == "mapa") {
+                                FloatingActionButton(
                                     onClick = { telaAtual = "adicionar" },
-                                    icon = { Icon(Icons.Default.Add, null) },
-                                    text = { Text("Novo Local") }
-                                )
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                ) {
+                                    Icon(Icons.Default.Add, contentDescription = "Adicionar Local")
+                                }
                             }
                         }
                     ) { padding ->
                         Box(modifier = Modifier.padding(padding)) {
                             when (telaAtual) {
-                                // Correção: LocaisListScreen requer o ViewModel E a função onLocalSelected
                                 "lista" -> LocaisListScreen(vm, onLocalSelected = { local ->
                                     vm.focarLocal(local)
                                     telaAtual = "mapa"
                                 })
                                 "mapa" -> LocaisMapScreen(vm)
                                 "adicionar" -> AddLocalScreen(
-                                    onSave = { vm.saveLocal(it); telaAtual = "lista" },
-                                    onCancel = { telaAtual = "lista" }
+                                    viewModel = vm,
+                                    onNavigateBack = { telaAtual = "lista" }
                                 )
                             }
                         }

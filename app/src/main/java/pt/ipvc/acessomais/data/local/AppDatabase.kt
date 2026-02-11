@@ -6,25 +6,29 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [LocalEntity::class, UserEntity::class], // Ambas as entidades aqui
-    version = 2, // Subir para a versão 2
+    entities = [LocalEntity::class, UserEntity::class],
+    version = 2, // Versão incrementada devido à alteração da tabela
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun localDao(): LocalDao
 
     companion object {
-        @Volatile private var INSTANCE: AppDatabase? = null
+        @Volatile
+        private var INSTANCE: AppDatabase? = null
 
-        fun getInstance(context: Context): AppDatabase =
-            INSTANCE ?: synchronized(this) {
-                INSTANCE ?: Room.databaseBuilder(
+        fun getInstance(context: Context): AppDatabase {
+            return INSTANCE ?: synchronized(this) {
+                val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
-                    "acesso_mais_db"
+                    "acessomais_db"
                 )
-                    .fallbackToDestructiveMigration() // Limpa dados antigos se a versão mudar
-                    .build().also { INSTANCE = it }
+                    .fallbackToDestructiveMigration() // Evita o crash ao recriar a BD
+                    .build()
+                INSTANCE = instance
+                instance
             }
+        }
     }
 }
