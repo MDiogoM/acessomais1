@@ -41,10 +41,12 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.material3)
 
-    // Firebase (Resolve erros de Unresolved reference no FirebaseService)
+    // Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
     implementation("com.google.firebase:firebase-firestore-ktx")
-    // Essencial para o erro "Unresolved reference: await"
+    implementation("com.google.firebase:firebase-auth-ktx")
+
+    // Essencial para resolver: Unresolved reference 'await'
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.1")
 
     // Room

@@ -1,5 +1,6 @@
 package pt.ipvc.acessomais.data.remote
 
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
@@ -9,13 +10,16 @@ class FirebaseService {
     private val db = Firebase.firestore
     private val collection = db.collection("locais")
 
-    suspend fun uploadLocal(local: Local): Boolean {
+    suspend fun getLocais(): List<Local> {
         return try {
-            // O uso de .await() requer a lib kotlinx-coroutines-play-services
-            collection.document(local.id.toString()).set(local).await()
-            true
+            val snapshot = collection.get().await()
+            snapshot.toObjects(Local::class.java)
         } catch (e: Exception) {
-            false
+            emptyList()
         }
+    }
+
+    suspend fun saveLocal(local: Local) {
+        collection.document(local.id).set(local).await()
     }
 }

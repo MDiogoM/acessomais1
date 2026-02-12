@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
                                     title = { Text("Acesso+", fontWeight = FontWeight.Bold) },
                                     navigationIcon = {
                                         IconButton(onClick = {
-                                            vm.logout() // Chama a função de limpeza no ViewModel
+                                            vm.logout()
                                             telaAtual = "auth"
                                         }) {
                                             Icon(imageVector = Icons.AutoMirrored.Filled.Logout, contentDescription = "Sair")
@@ -46,6 +46,7 @@ class MainActivity : ComponentActivity() {
                                     },
                                     actions = {
                                         val mostrarTodos by vm.mostrarTodos.collectAsState()
+                                        // Chama a função corrigida no ViewModel
                                         IconButton(onClick = { vm.toggleMostrarTodos() }) {
                                             Icon(
                                                 imageVector = if (mostrarTodos) Icons.Default.People else Icons.Default.Person,
@@ -79,7 +80,8 @@ class MainActivity : ComponentActivity() {
                         Box(modifier = Modifier.padding(padding)) {
                             when (telaAtual) {
                                 "lista" -> LocaisListScreen(viewModel = vm, onLocalSelected = { local ->
-                                    vm.focarLocal(local) // Define o local para foco no mapa
+                                    // Chama a função corrigida no ViewModel
+                                    vm.focarLocal(local)
                                     telaAtual = "mapa"
                                 })
                                 "mapa" -> LocaisMapScreen(viewModel = vm)
