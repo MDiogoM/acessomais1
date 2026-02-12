@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
                                     title = { Text("Acesso+", fontWeight = FontWeight.Bold) },
                                     navigationIcon = {
                                         IconButton(onClick = {
-                                            vm.logout()
+                                            vm.logout() // Chama a função de limpeza no ViewModel
                                             telaAtual = "auth"
                                         }) {
                                             Icon(imageVector = Icons.AutoMirrored.Filled.Logout, contentDescription = "Sair")
@@ -79,7 +79,7 @@ class MainActivity : ComponentActivity() {
                         Box(modifier = Modifier.padding(padding)) {
                             when (telaAtual) {
                                 "lista" -> LocaisListScreen(viewModel = vm, onLocalSelected = { local ->
-                                    vm.focarLocal(local)
+                                    vm.focarLocal(local) // Define o local para foco no mapa
                                     telaAtual = "mapa"
                                 })
                                 "mapa" -> LocaisMapScreen(viewModel = vm)

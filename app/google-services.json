@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "306873806500",
+    "project_id": "acessomais-85619",
+    "storage_bucket": "acessomais-85619.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:306873806500:android:4fd9f01c4e55074550c031",
+        "android_client_info": {
+          "package_name": "pt.ipvc.acessomais"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWkVhqd2wFI5K6hgapT5N8rWvV01se1tU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

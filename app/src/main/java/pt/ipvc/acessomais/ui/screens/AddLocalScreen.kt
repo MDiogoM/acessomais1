@@ -1,5 +1,6 @@
 package pt.ipvc.acessomais.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -7,6 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import pt.ipvc.acessomais.data.model.Local
@@ -18,6 +20,7 @@ fun AddLocalScreen(
     viewModel: LocalViewModel,
     onNavigateBack: () -> Unit
 ) {
+    val context = LocalContext.current
     var nome by remember { mutableStateOf("") }
     var latInput by remember { mutableStateOf("") }
     var lonInput by remember { mutableStateOf("") }
@@ -72,27 +75,29 @@ fun AddLocalScreen(
 
             Button(
                 onClick = {
-                    // Correção: Substituir vírgulas por pontos antes da conversão
-                    val lat = latInput.replace(',', '.').toDoubleOrNull() ?: 0.0
-                    val lon = lonInput.replace(',', '.').toDoubleOrNull() ?: 0.0
+                    val lat = latInput.replace(',', '.').toDoubleOrNull()
+                    val lon = lonInput.replace(',', '.').toDoubleOrNull()
 
-                    userEmail?.let { email ->
-                        val novoLocal = Local(
-                            userEmail = email,
-                            nome = nome,
-                            latitude = lat,
-                            longitude = lon,
-                            comentario = comentario,
-                            // Valores padrão para os campos restantes do modelo
-                            tipo = "Geral",
-                            temRampa = false,
-                            temElevador = false,
-                            larguraEntradaCm = null,
-                            temWcAdaptado = false,
-                            rating = 0
-                        )
-                        viewModel.saveLocal(novoLocal)
-                        onNavigateBack()
+                    if (lat == null || lon == null) {
+                        Toast.makeText(context, "Insira coordenadas válidas!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        userEmail?.let { email ->
+                            val novoLocal = Local(
+                                userEmail = email,
+                                nome = nome,
+                                latitude = lat,
+                                longitude = lon,
+                                comentario = comentario,
+                                tipo = "Geral",
+                                temRampa = false,
+                                temElevador = false,
+                                larguraEntradaCm = null,
+                                temWcAdaptado = false,
+                                rating = 0
+                            )
+                            viewModel.saveLocal(novoLocal)
+                            onNavigateBack()
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),

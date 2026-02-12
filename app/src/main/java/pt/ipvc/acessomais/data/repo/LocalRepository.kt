@@ -6,6 +6,7 @@ import pt.ipvc.acessomais.data.local.LocalDao
 import pt.ipvc.acessomais.data.model.Local
 
 class LocalRepository(private val localDao: LocalDao) {
+    // Corrigido para toDomain() conforme definido em LocalMappers.kt
     fun getLocais(email: String): Flow<List<Local>> =
         localDao.getLocaisByUser(email).map { list -> list.map { it.toDomain() } }
 

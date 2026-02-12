@@ -7,13 +7,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import pt.ipvc.acessomais.data.local.AppDatabase
-import pt.ipvc.acessomais.data.local.UserEntity
+import pt.ipvc.acessomais.data.local.UserEntity // Import necessário para reconhecer a password
 import pt.ipvc.acessomais.data.model.Local
 import pt.ipvc.acessomais.data.repo.LocalRepository
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LocalViewModel(app: Application) : AndroidViewModel(app) {
 
+    // Inicialização do DAO através do Singleton da base de dados
     private val dao = AppDatabase.getInstance(app).localDao()
     private val repository = LocalRepository(dao)
 
@@ -41,15 +42,20 @@ class LocalViewModel(app: Application) : AndroidViewModel(app) {
     fun autenticar(email: String, pass: String, isLogin: Boolean, onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
             if (isLogin) {
+                // Chamada correta via objeto dao
                 val user = dao.getUserByEmail(email)
                 if (user != null && user.password == pass) {
                     _userEmailLogado.value = email
                     onSuccess()
-                } else onError("Email ou password incorretos")
+                } else {
+                    onError("Email ou password incorretos")
+                }
             } else {
                 val exist = dao.getUserByEmail(email)
-                if (exist != null) onError("O utilizador já existe")
-                else {
+                if (exist != null) {
+                    onError("O utilizador já existe")
+                } else {
+                    // Chamada correta para inserir novo utilizador
                     dao.insertUser(UserEntity(email, pass))
                     _userEmailLogado.value = email
                     onSuccess()
@@ -58,16 +64,11 @@ class LocalViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun toggleMostrarTodos() { _mostrarTodos.value = !_mostrarTodos.value }
-
     fun logout() {
         _userEmailLogado.value = null
         _localRecemAdicionado.value = null
+        _mostrarTodos.value = false
     }
-
-    fun focarLocal(local: Local) { _localRecemAdicionado.value = local }
-
-    fun limparFoco() { _localRecemAdicionado.value = null }
 
     fun saveLocal(local: Local) {
         viewModelScope.launch {
@@ -79,7 +80,6 @@ class LocalViewModel(app: Application) : AndroidViewModel(app) {
     fun deleteLocal(local: Local) {
         viewModelScope.launch {
             repository.deleteLocal(local)
-            if (_localRecemAdicionado.value?.id == local.id) limparFoco()
         }
     }
 }
